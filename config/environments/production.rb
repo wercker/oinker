@@ -26,6 +26,8 @@ Rails.application.configure do
 
   config.assets.version = '1.0'
 
+  config.logger = Logger.new(STDOUT)
+
   # Set to :debug to see everything in the log.
   config.log_level = :info
 

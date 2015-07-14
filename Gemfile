@@ -14,6 +14,8 @@ gem 'cassandra-driver'
 # in the background. Read more: https://github.com/rails/spring
 gem 'spring', group: :development
 
+gem 'kafka-rb', '~> 0.0.15'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
