@@ -1,14 +1,38 @@
-require 'cassandra'
-require 'time'
+require 'elasticsearch'
+require 'elasticsearch/model'
+require 'elasticsearch/persistence'
 
-# Oink class that talks to Cassandra
+# Oink class that talks to es
 class Oink
-  @@cluster = Cassandra.cluster(
-    hosts: ['cassandra-dcos-node.cassandra.dcos.mesos'])
-  @@keyspace = 'oinker'
-  @@session  = @@cluster.connect(@@keyspace)
-  @@generator = Cassandra::Uuid::Generator.new
-  @@paging_state = nil
+  @@repository = Elasticsearch::Persistence::Repository.new url: ENV['ELASTICSEARCH_URL'], log: true do
+
+    # Set a custom index name
+    index :my_oinks
+
+    # Set a custom document type
+    type  :oink
+
+    # Specify the class to initialize when deserializing documents
+    klass Oink
+
+    settings number_of_shards: 1 do
+      mapping do
+        indexes :content,     analyzer: 'snowball'
+        indexes :created_at,  type: 'date'
+      end
+    end
+
+    def deserialize(oink)
+      c = Oink.new
+      c.id = oink['_source']['_id']
+      c.content = oink['_source']['content']
+      c.created_at = oink['_source']['created_at']
+      c.handle = oink['_source']['handle']
+      c
+    end
+
+    create_index!
+  end
 
   attr_accessor :id, :content, :created_at, :handle
 
@@ -19,51 +43,32 @@ class Oink
   end
 
   def destroy
-    @@session.execute(
-      'DELETE from oinks WHERE id = ?',
-      arguments: [@id])
+    @@repository.delete(@id, refresh: true)
   end
 
-  def self.all(paged = false)
-    result = @@session.execute(
-      'SELECT id, content, created_at, handle FROM oinks ' \
-      'WHERE kind = ? ORDER BY created_at DESC',
-      arguments: ['oink'],
-      page_size: 25,
-      paging_state: (paged ? @@paging_state : nil)
+  def self.all()
+    @@repository.search(
+      query: { match_all: {} },
+      sort: [{created_at: {order: 'desc'}}],
+      size: 100
     )
-    @@paging_state = result.paging_state
-    result.map do |oink|
-      c = Oink.new
-      c.id, c.content, c.handle = oink['id'], oink['content'], oink['handle']
-      c.created_at = oink['created_at'].to_time.utc.iso8601
-      c
-    end
   end
 
   def self.create(params)
     c = Oink.new
     c.id = SecureRandom.urlsafe_base64
     c.content = params[:content]
-    cassandra_time = @@generator.now
-    c.created_at = cassandra_time.to_time.utc.iso8601
+    c.created_at = Time.now.utc.iso8601
     c.handle = params[:handle].downcase
-    @@session.execute(
-      'INSERT INTO oinks (kind, id, content, created_at, handle) ' \
-      'VALUES (?, ?, ?, ?, ?)',
-      arguments: ['oink', c.id, c.content, cassandra_time, c.handle])
+    @@repository.save(c, refresh:true)
     c
   end
 
   def self.find(id)
-    oink = @@session.execute(
-      'SELECT id, content, created_at, handle FROM oinks WHERE id = ?',
-      arguments: [id]).first
-    c = Oink.new
-    c.id = oink['id']
-    c.content = oink['content']
-    c.created_at = oink['created_at'].to_time.utc.iso8601
-    c.handle = oink['handle']
-    c
+    @@repository.find(id)
+  end
+
+  def to_hash
+    { "_id" => @id, "content" => @content, "created_at" => @created_at, "handle" => @handle }
   end
 end

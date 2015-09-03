@@ -56,7 +56,7 @@
                       <small>
                         <% created_at = oink.created_at %>
                         <time datetime="<%= created_at %>">
-                          <%= time_ago_in_words(DateTime.parse(created_at)) %>
+                          <%= time_ago_in_words(created_at) %>
                         </time>
                       </small>
                     <!-- </a> -->
