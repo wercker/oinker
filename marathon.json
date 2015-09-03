@@ -4,7 +4,8 @@
     "container": {
         "type": "DOCKER",
         "docker": {
-            "image": "mesosphere/oinker:shakespeare",
+            "image": "mesosphere/oinker:elasticsearch",
+            "forcePullImage": true,
             "network": "BRIDGE",
             "portMappings": [
                 {
@@ -15,6 +16,9 @@
             ]
         }
     },
+    "env": {
+        "ELASTICSEARCH_URL": "es-demo.elasticsearch.mesos:9200"
+    },
     "healthChecks": [{
         "protocol": "TCP",
         "gracePeriodSeconds": 600,
@@ -23,7 +27,7 @@
         "timeoutSeconds": 10,
         "maxConsecutiveFailures": 2
     }],
-    "cmd": "until rake cassandra:setup; do sleep 5; done && rails server",
+    "cmd": "rails server",
     "ports": [0],
     "cpus": 0.25,
     "mem": 256.0
