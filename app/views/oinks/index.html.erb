@@ -32,10 +32,21 @@
     <div class="col-md-6">
       <div class="list-group">
         <% if @oinks.length < 1 %>
-          <h3 class="text-muted text-center">
-            What are you waiting for?<br>Start oinking.
-          </h3>
+          <% if params.has_key?(:search) %>
+            <h3 class="text-muted text-center">
+              Nothing found in your search...<br>Try again.
+            </h3>
+          <% else %>
+            <h3 class="text-muted text-center">
+              What are you waiting for?<br>Start oinking.
+            </h3>
+          <% end %>
         <% else %>
+          <% if params.has_key?(:search) %>
+            <h4 class="text-muted">
+              Searched for: <%= params[:search] %>
+            </h4>
+          <% end %>
           <% @oinks.each do |oink| %>
             <div class="list-group-item">
               <div class="media">
@@ -52,14 +63,14 @@
                       <% end %>
                     </div>
                     @<%= oink.handle %> &middot;
-                    <!-- <a href="<%= oink_path(oink.id) %>"> -->
+                    <a href="<%= oink_path(oink.id) %>">
                       <small>
                         <% created_at = oink.created_at %>
                         <time datetime="<%= created_at %>">
                           <%= time_ago_in_words(created_at) %>
                         </time>
                       </small>
-                    <!-- </a> -->
+                    </a>
                   </h5>
                   <%= simple_format oink.content, :class => "oink-content" %>
                 </div>

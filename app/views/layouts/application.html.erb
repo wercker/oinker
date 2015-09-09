@@ -17,6 +17,12 @@
         <ul class="nav navbar-nav">
           <li><a href="/analytics" style="margin-top: 5px; margin-bottom: 5px; padding-top: 10px; padding-bottom: 6px;">Analytics</a></li>
         </ul>
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+              <input type="text" name="search" class="form-control" placeholder="Search">
+          </div>
+          <button type="submit" action="index.html" class="btn btn-default"><img src="<%= image_path('search.png') %>" width="20"></button>
+        </form>
       </div>
     </nav>
     <%= yield %>

@@ -1,0 +1,7 @@
+{
+  "id": "cache",
+  "instances": 6,
+  "acceptedResourceRoles": ["slave_public", "*"],
+  "constraints": [["hostname", "UNIQUE"]],
+  "cmd": "docker pull abhayagarwal/elasticsearch-scheduler:0.1.0 && docker pull mesosphere/oinker:elasticsearch && docker pull mesosphere/spark:1.4.0-rc4-hdfs && sleep 99999999"
+}

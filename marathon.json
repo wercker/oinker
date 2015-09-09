@@ -1,6 +1,7 @@
 {
     "id": "/oinker",
-    "instances": 3,
+    "instances": 1,
+    "acceptedResourceRoles": ["slave_public"],
     "container": {
         "type": "DOCKER",
         "docker": {
@@ -10,14 +11,14 @@
             "portMappings": [
                 {
                     "containerPort": 3000,
-                    "hostPort": 0,
+                    "hostPort": 80,
                     "protocol": "tcp"
                 }
             ]
         }
     },
     "env": {
-        "ELASTICSEARCH_URL": "es-demo.elasticsearch.mesos:9200"
+        "ELASTICSEARCH_URL": "esdemo.elasticsearch.mesos:9200"
     },
     "healthChecks": [{
         "protocol": "TCP",
@@ -28,7 +29,7 @@
         "maxConsecutiveFailures": 2
     }],
     "cmd": "rails server",
-    "ports": [0],
+    "ports": [80],
     "cpus": 0.25,
     "mem": 256.0
 }

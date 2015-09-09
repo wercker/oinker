@@ -2,37 +2,43 @@ require 'elasticsearch'
 require 'elasticsearch/model'
 require 'elasticsearch/persistence'
 
-# Oink class that talks to es
-class Oink
-  @@repository = Elasticsearch::Persistence::Repository.new url: ENV['ELASTICSEARCH_URL'], log: true do
+class OinkRepository
+  include Elasticsearch::Persistence::Repository
 
-    # Set a custom index name
-    index :my_oinks
+  client Elasticsearch::Client.new url: ENV['ELASTICSEARCH_URL'], log: true
 
-    # Set a custom document type
-    type  :oink
+  # Set a custom index name
+  index :my_oinks
 
-    # Specify the class to initialize when deserializing documents
-    klass Oink
+  # Set a custom document type
+  type  :oink
 
-    settings number_of_shards: 1 do
-      mapping do
-        indexes :content,     analyzer: 'snowball'
-        indexes :created_at,  type: 'date'
-      end
+  # Specify the class to initialize when deserializing documents
+  # klass Oink
+
+  settings number_of_shards: 1 do
+    mapping do
+      indexes :content,     analyzer: 'snowball'
+      indexes :created_at,  type: 'date'
     end
-
-    def deserialize(oink)
-      c = Oink.new
-      c.id = oink['_source']['_id']
-      c.content = oink['_source']['content']
-      c.created_at = oink['_source']['created_at']
-      c.handle = oink['_source']['handle']
-      c
-    end
-
-    create_index!
   end
+
+  def deserialize(oink)
+    c = Oink.new
+    c.id = oink['_source']['id']
+    c.content = oink['_source']['content']
+    c.created_at = oink['_source']['created_at']
+    c.handle = oink['_source']['handle']
+    c
+  end
+
+  create_index!
+end unless defined?(OinkRepository)
+
+# Oink class that talks to elasticsearch
+class Oink
+
+  @@repository = OinkRepository.new
 
   attr_accessor :id, :content, :created_at, :handle
 
@@ -46,12 +52,19 @@ class Oink
     @@repository.delete(@id, refresh: true)
   end
 
-  def self.all()
-    @@repository.search(
-      query: { match_all: {} },
-      sort: [{created_at: {order: 'desc'}}],
-      size: 100
-    )
+  def self.all(terms)
+    if (terms != nil) then
+      @@repository.search(
+        query: { match: { content: terms }},
+        size: 100
+      )
+    else
+      @@repository.search(
+        query: { match_all: {} },
+        sort: [{created_at: {order: 'desc'}}],
+        size: 100
+      )
+    end
   end
 
   def self.create(params)
@@ -69,6 +82,6 @@ class Oink
   end
 
   def to_hash
-    { "_id" => @id, "content" => @content, "created_at" => @created_at, "handle" => @handle }
+    { "id" => @id, "content" => @content, "created_at" => @created_at, "handle" => @handle }
   end
 end
