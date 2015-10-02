@@ -18,7 +18,7 @@
         }
     },
     "env": {
-        "ELASTICSEARCH_URL": "esdemo.elasticsearch.mesos:9200"
+        "ELASTICSEARCH_URL": "elasticsearch-executor.elasticsearch.mesos:9200"
     },
     "healthChecks": [{
         "protocol": "TCP",
