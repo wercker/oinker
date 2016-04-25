@@ -16,7 +16,7 @@ build:
         cmd: rails server
         working-dir: /rails
         ports: 3000
-        repository: tonnu/oinker
+        repository: $REPOSITORY
 
 deploy-to-marathon:
   box: 
