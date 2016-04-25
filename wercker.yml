@@ -6,7 +6,7 @@ build:
         name: move to rails dir
         code: |
               mkdir rails 
-              mv $WERCKER_SOURCE_DIR /rails 
+              cp -R $WERCKER_SOURCE_DIR /rails 
               cd /rails
     - bundle-install:
         cwd: /rails
