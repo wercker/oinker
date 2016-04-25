@@ -18,3 +18,15 @@ build:
         ports: 3000
         repository: tonnu/oinker
 
+deploy-to-marathon:
+  box: 
+    id: buildpack-deps:jessie
+  steps:
+    - script:
+        name: generate json file
+        code: chmod +x template.sh && ./template.sh && cat $APP_NAME.json
+    - marathon-deploy:
+        marathon-url: $MARATHON_URL
+        app-name: $APP_NAME
+        app-json-file: $APP_JSON
+        instances: "3"
