@@ -1,6 +1,13 @@
 box: rails:4.1
-
-build:
+dev:
+  services:
+    - cassandra
+  steps:
+    - bundle-install
+    - internal/watch:
+        code: until bundle exec rake cassandra:setup; do sleep 5; done; rails server
+        reload: false
+build-dev:
   steps:
     - script:
         name: move to rails dir
@@ -17,6 +24,38 @@ build:
         working-dir: /rails
         ports: 3000
         repository: $REPOSITORY
+        tag: dev
+
+build-prod:
+  box: 
+    id: alpine:3.2
+    cmd: /bin/sh
+  steps:
+    - script:
+        name: install deps
+        code: |
+          apk update && apk upgrade
+          echo installing deps
+          apk add bash curl-dev ruby-dev build-base tzdata
+          echo installing ruby stuff
+          apk add ruby ruby-io-console ruby-bundler
+          apk add nodejs
+          rm -rf /var/cache/apk/*
+    - script:
+        name: bundle install
+        code: |
+          gem install bundler
+          # bundle install --without development test
+          bundle install 
+    - internal/docker-push:
+        username: $USERNAME
+        password: $PASSWORD
+        cmd: rails server
+        working-dir: /pipeline/source
+        ports: 3000
+        repository: $REPOSITORY
+        tag: alpine
+
 
 deploy-to-marathon:
   box: 

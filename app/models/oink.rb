@@ -4,7 +4,7 @@ require 'time'
 # Oink class that talks to Cassandra
 class Oink
   @@cluster = Cassandra.cluster(
-    hosts: ['cassandra-dcos-node.cassandra.dcos.mesos'])
+    hosts: ['cassandra-dcos-node.cassandra.dcos.mesos', 'cassandra'])
   @@keyspace = 'oinker'
   @@session  = @@cluster.connect(@@keyspace)
   @@generator = Cassandra::Uuid::Generator.new

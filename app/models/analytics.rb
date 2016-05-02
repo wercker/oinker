@@ -4,7 +4,7 @@ require 'time'
 # Oink class that talks to Cassandra
 class Analytics
   @@cluster = Cassandra.cluster(
-    hosts: ['cassandra-dcos-node.cassandra.dcos.mesos'])
+    hosts: ['cassandra', 'cassandra-dcos-node.cassandra.dcos.mesos'])
   @@keyspace = 'oinker'
   @@session  = @@cluster.connect(@@keyspace)
   @@paging_state = nil

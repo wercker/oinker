@@ -4,7 +4,7 @@ namespace :cassandra do
   desc "TODO"
   task :setup => :environment do
   	@@cluster = Cassandra.cluster(
-    hosts: ['cassandra-dcos-node.cassandra.dcos.mesos'])
+    hosts: ['cassandra'])
   @@keyspace = 'oinker'
   @@session  = @@cluster.connect()
   @@session.execute(
