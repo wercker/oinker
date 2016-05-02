@@ -36,7 +36,7 @@ build-prod:
         code: |
           apk update && apk upgrade
           echo installing deps
-          apk add bash curl-dev ruby-dev build-base tzdata
+          apk add curl-dev ruby-dev build-base tzdata
           echo installing ruby stuff
           apk add ruby ruby-io-console ruby-bundler
           apk add nodejs
@@ -56,14 +56,18 @@ build-prod:
         repository: $REPOSITORY
         tag: alpine
 
-
 deploy-to-marathon:
   box: 
     id: buildpack-deps:jessie
   steps:
     - script:
         name: generate json file
-        code: chmod +x template.sh && ./template.sh && cat $APP_NAME.json
+        code: | 
+          chmod +x template.sh 
+          ./template.sh
+          echo $MARATHON_URL
+          echo $APP_NAME
+          cat $APP_NAME.json
     - marathon-deploy:
         marathon-url: $MARATHON_URL
         app-name: $APP_NAME
