@@ -65,8 +65,6 @@ deploy-to-marathon:
         code: | 
           chmod +x template.sh 
           ./template.sh
-          echo $MARATHON_URL
-          echo $APP_NAME
           cat $APP_NAME.json
     - marathon-deploy:
         marathon-url: $MARATHON_URL
