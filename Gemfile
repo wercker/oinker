@@ -11,13 +11,13 @@ gem 'uglifier', '>= 1.3.0'
 gem 'cassandra-driver', '>= 3.0.0.rc.2'
 
 # Kafka for logging tweets
-gem 'ruby-kafka', '~> 0.2.0'
+#gem 'ruby-kafka', '~> 0.2.0'
 
 # Spring speeds up development by keeping your application running
 # in the background. Read more: https://github.com/rails/spring
 gem 'spring', group: :development
 
-gem 'rspec'
+gem 'rspec-rails'
 
 #gem 'tzinfo-data'
 gem 'rack-test'

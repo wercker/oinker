@@ -6,7 +6,10 @@ dev:
   steps:
     - bundle-install
     - internal/watch:
-        code: until bundle exec rake cassandra:setup; do echo "waiting..."; sleep 5; done; rails server
+        code: | 
+          until bundle exec rake cassandra:setup; do echo "waiting..."; sleep 5; done;
+          bundle exec rspec
+          rails server
         reload: false
 build-dev:
   steps:
@@ -72,3 +75,4 @@ deploy-to-marathon:
         app-name: $APP_NAME
         app-json-file: $APP_JSON
         instances: "3"
+        auth-token: $MESOS_TOKEN
