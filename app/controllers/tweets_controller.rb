@@ -4,7 +4,8 @@ class TweetsController < ActionController::Base
 
   def create
     @tweet = Tweet.create(tweet_params)
-    log_tweet(@tweet)
+		# Uncomment this line if you want to do analytics with Kafka
+    # log_tweet(@tweet)
     redirect_to root_path
   end
 

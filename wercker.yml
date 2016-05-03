@@ -1,11 +1,12 @@
 box: rails:4.1
 dev:
   services:
-    - cassandra
+    - spotify/cassandra
+#    - spotify/kafka
   steps:
     - bundle-install
     - internal/watch:
-        code: until bundle exec rake cassandra:setup; do sleep 5; done; rails server
+        code: until bundle exec rake cassandra:setup; do echo "waiting..."; sleep 5; done; rails server
         reload: false
 build-dev:
   steps:
