@@ -14,6 +14,17 @@ dev:
           bundle exec rspec
           rails server
         reload: false
+test:
+  services:
+    - spotify/cassandra
+  steps:
+    - bundle-install
+    - script:
+        name: setup cassandra
+        code: until bundle exec rake cassandra:setup; do sleep 5; done;
+    - script:
+        name: rspec
+        code: bundle exec rspec
 
 build-dev:
   steps:
