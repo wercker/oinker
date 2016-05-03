@@ -59,6 +59,7 @@ build-prod:
         ports: 3000
         repository: $REPOSITORY
         tag: alpine
+        env: "CASSANDRA_HOSTS: node-0.cassandra.mesos"
 
 deploy-to-marathon:
   box: 
