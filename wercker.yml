@@ -1,11 +1,7 @@
 box: rails:4.1
 dev:
-  box:
-    id: $REPOSITORY:alpine
-    cmd: /bin/sh
   services:
     - spotify/cassandra
-#    - spotify/kafka
   steps:
     - bundle-install
     - internal/watch:
@@ -31,9 +27,9 @@ build-dev:
     - script:
         name: move to rails dir
         code: |
-              mkdir rails 
-              cp -R $WERCKER_SOURCE_DIR /rails 
-              cd /rails
+              mkdir /rails 
+              mv $WERCKER_SOURCE_DIR/* /rails 
+              ls -la /rails
     - bundle-install:
         cwd: /rails
     - internal/docker-push:
@@ -74,6 +70,7 @@ build-prod:
         ports: 3000
         repository: $REPOSITORY
         tag: alpine
+        disable-sync: true
 
 deploy-to-marathon:
   box: 
